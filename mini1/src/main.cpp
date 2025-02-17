@@ -1,11 +1,13 @@
 #include <iostream>
 #include "CollisionDataset.hpp"
 #include "Benchmark.hpp"
+#include "ParallelBenchmark.hpp"
 
 int main() {
     const std::string filename = "../data/Motor_Vehicle_Collisions.csv";
     const int RUN_TIMES = 10;
 
+    std::cout << "\n=== Original Sequential Benchmarks ===\n";
     Benchmark::benchmarkLoad(filename, RUN_TIMES);
 
     // Create a dataset and load data once.
@@ -15,19 +17,30 @@ int main() {
         return 1;
     }
 
-    // Benchmark search by date range.
+    // Test with different thread counts
+    const int thread_counts[] = {2, 4, 8};
     std::string startDate = "2020-01-01";
     std::string endDate   = "2020-12-31";
-    Benchmark::benchmarkSearchByDate(dataset, startDate, endDate, RUN_TIMES);
+    
+    for (int threads : thread_counts) {
+        std::cout << "\n=== Testing with " << threads << " threads ===\n";
+        
+        // Compare search by date range
+        ParallelBenchmark::compareSearchByDate(dataset, startDate, endDate, RUN_TIMES, threads);
 
-    // Benchmark search by borough (for example, "BROOKLYN").
-    Benchmark::benchmarkSearchByBorough(dataset, "BROOKLYN", RUN_TIMES);
+        // Compare search by borough
+        ParallelBenchmark::compareSearchByBorough(dataset, "BROOKLYN", RUN_TIMES, threads);
 
-    // Benchmark search by zip code (for example, "11201").
-    Benchmark::benchmarkSearchByZipCode(dataset, "11201", RUN_TIMES);
+        // Compare search by injury threshold
+        ParallelBenchmark::compareSearchByInjuryThreshold(dataset, 5, RUN_TIMES, threads);
+    }
 
-    // Benchmark search by injury threshold (for example, minimum 5 injuries).
-    Benchmark::benchmarkSearchByInjuryThreshold(dataset, 5, RUN_TIMES);
+    // Also test with max available threads
+    int max_threads = omp_get_max_threads();
+    std::cout << "\n=== Testing with maximum available threads (" << max_threads << ") ===\n";
+    ParallelBenchmark::compareSearchByDate(dataset, startDate, endDate, RUN_TIMES, max_threads);
+    ParallelBenchmark::compareSearchByBorough(dataset, "BROOKLYN", RUN_TIMES, max_threads);
+    ParallelBenchmark::compareSearchByInjuryThreshold(dataset, 5, RUN_TIMES, max_threads);
     
     return 0;
 }
