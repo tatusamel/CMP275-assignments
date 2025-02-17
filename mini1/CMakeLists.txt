@@ -11,6 +11,7 @@ set(SOURCES
     src/main.cpp
     src/CSVParser.cpp
     src/CollisionRecord.cpp
+    src/CollisionDataset.cpp
 )
 
 # Create the executable

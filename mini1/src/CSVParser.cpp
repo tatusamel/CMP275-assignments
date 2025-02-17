@@ -33,21 +33,22 @@ bool CSVParser::parse() {
             record.crashTime = tokens[1];
             record.borough = tokens[2];
             record.zipCode = tokens[3];
-            record.latitude = std::stod(tokens[4]);
-            record.longitude = std::stod(tokens[5]);
+            record.latitude = tokens[4].empty() ? 0.0 : std::stod(tokens[4]);
+            record.longitude = tokens[5].empty() ? 0.0 : std::stod(tokens[5]);
             record.location = tokens[6];
             record.onStreetName = tokens[7];
             record.crossStreetName = tokens[8];
             record.offStreetName = tokens[9];
 
-            record.personsInjured = std::stoi(tokens[10]);
-            record.personsKilled = std::stoi(tokens[11]);
-            record.pedestriansInjured = std::stoi(tokens[12]);
-            record.pedestriansKilled = std::stoi(tokens[13]);
-            record.cyclistsInjured = std::stoi(tokens[14]);
-            record.cyclistsKilled = std::stoi(tokens[15]);
-            record.motoristsInjured = std::stoi(tokens[16]);
-            record.motoristsKilled = std::stoi(tokens[17]);
+
+            record.personsInjured = tokens[10].empty() ? 0 : std::stoi(tokens[10]);
+            record.personsKilled = tokens[11].empty() ? 0 : std::stoi(tokens[11]);
+            record.pedestriansInjured = tokens[12].empty() ? 0 : std::stoi(tokens[12]);
+            record.pedestriansKilled = tokens[13].empty() ? 0 : std::stoi(tokens[13]);
+            record.cyclistsInjured = tokens[14].empty() ? 0 : std::stoi(tokens[14]);
+            record.cyclistsKilled = tokens[15].empty() ? 0 : std::stoi(tokens[15]);
+            record.motoristsInjured = tokens[16].empty() ? 0 : std::stoi(tokens[16]);
+            record.motoristsKilled = tokens[17].empty() ? 0 : std::stoi(tokens[17]);
 
             record.contributingFactorVehicle1 = tokens[18];
             record.contributingFactorVehicle2 = tokens[19];
@@ -55,8 +56,8 @@ bool CSVParser::parse() {
             record.contributingFactorVehicle4 = tokens[21];
             record.contributingFactorVehicle5 = tokens[22];
 
-            record.collisionID = std::stol(tokens[23]);
-
+            record.collisionID = tokens[23].empty() ? 0 : std::stol(tokens[23]);
+            
             record.vehicleTypeCode1 = tokens[24];
             record.vehicleTypeCode2 = tokens[25];
             record.vehicleTypeCode3 = tokens[26];

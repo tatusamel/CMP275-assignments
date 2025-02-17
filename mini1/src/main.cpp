@@ -5,7 +5,7 @@
 int main () {
 
     CollisionDataset dataset;
-    const std::string filename = "data/Motor_Vehicle_Collisions_-_Crashes.csv";
+    const std::string filename = "../data/Motor_Vehicle_Collisions.csv";
 
     const int RUN_TIMES = 10;
     double totalLoadTime = 0.0;
