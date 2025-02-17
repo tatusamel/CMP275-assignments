@@ -12,13 +12,13 @@ public:
 
     bool parse();
     std::vector<CollisionRecord> getRecords() const;
+    std::vector<std::string> splitCSV(const std::string &line);
 
 private:
 
     std::string filename;
     std::vector<CollisionRecord> records;
 
-    std::vector<std::string> splitCSV(const std::string &line);
 };
 
 #endif // CSV_PARSER_HPP

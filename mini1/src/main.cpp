@@ -2,6 +2,8 @@
 #include "CollisionDataset.hpp"
 #include "Benchmark.hpp"
 #include "ParallelBenchmark.hpp"
+#include "OptimizedCollisionDataset.hpp"
+#include "OptimizedBenchmark.hpp"
 
 int main() {
     const std::string filename = "../data/Motor_Vehicle_Collisions.csv";
@@ -19,8 +21,8 @@ int main() {
 
     // Test with different thread counts
     const int thread_counts[] = {2, 4, 8};
-    std::string startDate = "2020-01-01";
-    std::string endDate   = "2020-12-31";
+    std::string startDate = "01/01/2020";
+    std::string endDate   = "12/31/2020";
     
     for (int threads : thread_counts) {
         std::cout << "\n=== Testing with " << threads << " threads ===\n";
@@ -41,6 +43,19 @@ int main() {
     ParallelBenchmark::compareSearchByDate(dataset, startDate, endDate, RUN_TIMES, max_threads);
     ParallelBenchmark::compareSearchByBorough(dataset, "BROOKLYN", RUN_TIMES, max_threads);
     ParallelBenchmark::compareSearchByInjuryThreshold(dataset, 5, RUN_TIMES, max_threads);
+
+
+    OptimizedCollisionDataset optimizedDataset;
+    optimizedDataset.loadFromCSV(filename);
+
+    // Compare implementations
+    OptimizedBenchmark::compareImplementations(
+        dataset,
+        optimizedDataset,
+        startDate,
+        endDate,
+        RUN_TIMES
+    );
     
     return 0;
 }
