@@ -1,47 +1,33 @@
 #include <iostream>
-#include <chrono>
 #include "CollisionDataset.hpp"
+#include "Benchmark.hpp"
 
-int main () {
-
-    CollisionDataset dataset;
+int main() {
     const std::string filename = "../data/Motor_Vehicle_Collisions.csv";
-
     const int RUN_TIMES = 10;
-    double totalLoadTime = 0.0;
 
-    for(int i = 0; i < RUN_TIMES; i++) {
-        auto start = std::chrono::high_resolution_clock::now();
-        if (!dataset.loadFromCSV(filename)) {
-            std::cerr << "Failed to load dataset from CSV file." << "\n";
-            return 1;
-        }
+    Benchmark::benchmarkLoad(filename, RUN_TIMES);
 
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        
-        totalLoadTime += elapsed.count();
+    // Create a dataset and load data once.
+    CollisionDataset dataset;
+    if (!dataset.loadFromCSV(filename)) {
+        std::cerr << "Failed to load dataset from CSV file.\n";
+        return 1;
     }
 
-    std::cout << "Average data loading time over " << RUN_TIMES << " runs: "
-              << totalLoadTime / RUN_TIMES << " seconds.\n";
-
+    // Benchmark search by date range.
     std::string startDate = "2020-01-01";
-    std::string endDate = "2020-12-31";
-    double totalSearchTime = 0.0;
+    std::string endDate   = "2020-12-31";
+    Benchmark::benchmarkSearchByDate(dataset, startDate, endDate, RUN_TIMES);
 
-    for(int i = 0; i < RUN_TIMES; i++) {
-        auto start = std::chrono::high_resolution_clock::now();
-        auto results = dataset.searchByDateRange(startDate, endDate);
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        
-        totalSearchTime += elapsed.count();
-    }
+    // Benchmark search by borough (for example, "BROOKLYN").
+    Benchmark::benchmarkSearchByBorough(dataset, "BROOKLYN", RUN_TIMES);
 
-    std::cout << "Average search time over " << RUN_TIMES << " runs: "
-              << totalSearchTime / RUN_TIMES << " seconds.\n";
+    // Benchmark search by zip code (for example, "11201").
+    Benchmark::benchmarkSearchByZipCode(dataset, "11201", RUN_TIMES);
 
-
+    // Benchmark search by injury threshold (for example, minimum 5 injuries).
+    Benchmark::benchmarkSearchByInjuryThreshold(dataset, 5, RUN_TIMES);
+    
     return 0;
 }
