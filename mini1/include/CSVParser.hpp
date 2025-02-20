@@ -11,6 +11,7 @@ public:
     CSVParser(const std::string filename) : filename(filename) {}
 
     bool parse();
+    bool parseParallel();
     std::vector<CollisionRecord> getRecords() const;
 
 private:
