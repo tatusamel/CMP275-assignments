@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "CollisionRecord.hpp"
+#include "CollisionDatasetParallelArrays.hpp"  // For new parse function
 
 class CSVParser {  
 public:
@@ -13,6 +14,9 @@ public:
     bool parse();
     bool parseParallel();
     std::vector<CollisionRecord> getRecords() const;
+
+    // New function to directly parse into an object-of-arrays
+    bool parseParallelArrays(class CollisionDatasetParallelArrays &dataset);
 
 private:
 
