@@ -1,11 +1,11 @@
 #include <string>
-
+#include <chrono>
 class CollisionRecord {
 public:
-    std::string crashDate;
+    std::time_t crashDate;
     std::string crashTime;
     std::string borough;
-    std::string zipCode;
+    int zipCode;
     double latitude;
     double longitude;
     std::string location;

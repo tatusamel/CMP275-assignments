@@ -11,17 +11,17 @@ public:
 
     std::vector<CollisionRecord> searchByDateRange(const std::string &startDate, const std::string &endDate) const;
     std::vector<CollisionRecord> searchByBorough(const std::string &borough) const;
-    std::vector<CollisionRecord> searchByZipCode(const std::string &zipCode) const;
+    std::vector<CollisionRecord> searchByZipCode(const int &zipCode) const;
     std::vector<CollisionRecord> searchByInjuryThreshold(int minInjuries) const;
     std::vector<CollisionRecord> searchByLocationBounds(double minLat, double maxLat,
                                                         double minLong, double maxLong) const;
     // Optional: Return full records vector (reconstructed from arrays)
     std::vector<CollisionRecord> getRecords() const;
     // Object-of-arrays: one vector per field.
-    std::vector<std::string> crashDates;
+    std::vector<std::time_t> crashDates;
     std::vector<std::string> crashTimes;
     std::vector<std::string> boroughs;
-    std::vector<std::string> zipCodes;
+    std::vector<int> zipCodes;
     std::vector<double> latitudes;
     std::vector<double> longitudes;
     std::vector<std::string> locations;

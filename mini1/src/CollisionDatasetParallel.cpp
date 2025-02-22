@@ -1,10 +1,11 @@
 #include "CollisionDatasetParallel.hpp"
 #include "CSVParser.hpp"
+#include "CollisionRecord.hpp"
 #include <fstream>
 #include <iostream>
 #include <omp.h>
 
-// Load CSV using parallel parser
+
 bool CollisionDatasetParallel::loadFromCSV(const std::string &filename) {
     CSVParser parser(filename);
     if (!parser.parseParallel()) {
@@ -15,13 +16,18 @@ bool CollisionDatasetParallel::loadFromCSV(const std::string &filename) {
 }
 
 std::vector<CollisionRecord> CollisionDatasetParallel::searchByDateRange(const std::string &startDate, const std::string &endDate) const {
+
+    std::time_t startDateTimestamp = CollisionRecord::convertToTimestamp(startDate);
+    std::time_t endDateTimestamp = CollisionRecord::convertToTimestamp(endDate);
+
     std::vector<CollisionRecord> result;
+
     #pragma omp parallel
     {
         std::vector<CollisionRecord> local;
         #pragma omp for nowait schedule(dynamic)
         for (size_t i = 0; i < records.size(); i++) {
-            if (records[i].crashDate >= startDate && records[i].crashDate <= endDate) {
+            if (records[i].crashDate >= startDateTimestamp && records[i].crashDate <= endDateTimestamp) {
                 local.push_back(records[i]);
             }
         }
@@ -48,7 +54,7 @@ std::vector<CollisionRecord> CollisionDatasetParallel::searchByBorough(const std
     return result;
 }
 
-std::vector<CollisionRecord> CollisionDatasetParallel::searchByZipCode(const std::string &zipCode) const {
+std::vector<CollisionRecord> CollisionDatasetParallel::searchByZipCode(const int &zipCode) const {
     std::vector<CollisionRecord> result;
     #pragma omp parallel
     {

@@ -5,14 +5,14 @@
 #include <chrono>
 #include <iostream>
 #include "CollisionDataset.hpp"
-#include "CollisionDatasetParallel.hpp" // Added for parallel benchmarks
-#include "CollisionDatasetParallelArrays.hpp" // For phase3
-#include <omp.h> // Added for setting thread count
+#include "CollisionDatasetParallel.hpp" 
+#include "CollisionDatasetParallelArrays.hpp" 
+#include <omp.h> 
 
 class Benchmark {
 public:
 
-    // Benchmark the data loading process.
+
     static void benchmarkLoad(const std::string &filename, int runTimes) {
         double totalLoadTime = 0.0;
         for (int i = 0; i < runTimes; i++) {
@@ -30,87 +30,97 @@ public:
                   << " runs: " << totalLoadTime / runTimes << " seconds.\n";
     }
 
-    // Benchmark the search by date range API.
+    
     static void benchmarkSearchByDate(const CollisionDataset &dataset,
                                       const std::string &startDate,
                                       const std::string &endDate,
                                       int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0; // new: store results count
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByDateRange(startDate, endDate);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average date range search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
-    // Benchmark the search by location bounds API.
+    
     static void benchmarkSearchByLocationBounds(const CollisionDataset &dataset,
                                                 double minLat, double maxLat,
                                                 double minLong, double maxLong,
                                                 int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByLocationBounds(minLat, maxLat, minLong, maxLong);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average location bounds search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
-    // You can add similar benchmarking methods for other APIs.
+    
     static void benchmarkSearchByBorough(const CollisionDataset &dataset,
                                            const std::string &borough,
                                            int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByBorough(borough);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average borough search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
     static void benchmarkSearchByZipCode(const CollisionDataset &dataset,
-                                           const std::string &zipCode,
+                                           const int &zipCode,
                                            int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByZipCode(zipCode);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average zip code search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
     static void benchmarkSearchByInjuryThreshold(const CollisionDataset &dataset,
                                            int minInjuries,
                                            int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByInjuryThreshold(minInjuries);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average injury threshold search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
-    // Benchmark the parallel data loading process.
+    
     static void benchmarkLoadParallel(const std::string &filename, int runTimes) {
         double totalLoadTime = 0.0;
         for (int i = 0; i < runTimes; i++) {
@@ -134,61 +144,68 @@ public:
                                                 const std::string &endDate,
                                                 int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByDateRange(startDate, endDate);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average parallel date range search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
     
-    // Similarly, add parallel benchmark methods for borough, zipcode, and injury threshold searches.
     static void benchmarkSearchByBoroughParallel(const CollisionDatasetParallel &dataset,
                                                    const std::string &borough,
                                                    int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByBorough(borough);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average parallel borough search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
     static void benchmarkSearchByZipCodeParallel(const CollisionDatasetParallel &dataset,
-                                                   const std::string &zipCode,
+                                                   const int &zipCode,
                                                    int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByZipCode(zipCode);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average parallel zip code search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
 
     static void benchmarkSearchByInjuryThresholdParallel(const CollisionDatasetParallel &dataset,
                                                    int minInjuries,
                                                    int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByInjuryThreshold(minInjuries);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average parallel injury threshold search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
     
     static void benchmarkSearchByLocationBoundsParallel(const CollisionDatasetParallel &dataset,
@@ -196,22 +213,24 @@ public:
                                                    double minLong, double maxLong,
                                                    int runTimes) {
         double totalSearchTime = 0.0;
+        int resultCount = 0;
         for (int i = 0; i < runTimes; i++) {
             auto start = std::chrono::high_resolution_clock::now();
             auto results = dataset.searchByLocationBounds(minLat, maxLat, minLong, maxLong);
+            if(i==0) resultCount = results.size();
             auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = end - start;
-            totalSearchTime += elapsed.count();
+            totalSearchTime += std::chrono::duration<double>(end - start).count();
         }
         std::cout << "Average parallel location bounds search time over " << runTimes 
-                  << " runs: " << totalSearchTime / runTimes << " seconds.\n";
+                  << " runs: " << totalSearchTime / runTimes 
+                  << " seconds. Results found: " << resultCount << ".\n";
     }
     
     // Optionally, add methods to compare sequential and parallel benchmarks.
     static void compareLoadBenchmarks(const std::string &filename, int runTimes) {
         std::cout << "\nSequential Load Benchmark:\n";
         benchmarkLoad(filename, runTimes);
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Load Benchmark with " << threads << " threads:\n";
@@ -228,7 +247,7 @@ public:
         std::cout << "\nSequential Date Range Search Benchmark:\n";
         benchmarkSearchByDate(seqDataset, startDate, endDate, runTimes);
         
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Date Range Search Benchmark with " << threads << " threads:\n";
@@ -244,7 +263,7 @@ public:
         std::cout << "\nSequential Borough Search Benchmark:\n";
         benchmarkSearchByBorough(seqDataset, borough, runTimes);
         
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Borough Search Benchmark with " << threads << " threads:\n";
@@ -252,15 +271,14 @@ public:
         }
     }
 
-    // Modified: Comparison for search by zip code using pre-loaded datasets.
     static void compareSearchByZipCodeBenchmarks(const CollisionDataset &seqDataset,
                                                  const CollisionDatasetParallel &parDataset,
-                                                 const std::string &zipCode,
+                                                 const int &zipCode,
                                                  int runTimes) {
         std::cout << "\nSequential Zip Code Search Benchmark:\n";
         benchmarkSearchByZipCode(seqDataset, zipCode, runTimes);
         
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Zip Code Search Benchmark with " << threads << " threads:\n";
@@ -276,7 +294,7 @@ public:
         std::cout << "\nSequential Injury Threshold Search Benchmark:\n";
         benchmarkSearchByInjuryThreshold(seqDataset, minInjuries, runTimes);
         
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Injury Threshold Search Benchmark with " << threads << " threads:\n";
@@ -293,7 +311,7 @@ public:
         std::cout << "\nSequential Location Bounds Search Benchmark:\n";
         benchmarkSearchByLocationBounds(seqDataset, minLat, maxLat, minLong, maxLong, runTimes);
         
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nParallel Location Bounds Search Benchmark with " << threads << " threads:\n";
@@ -304,7 +322,7 @@ public:
     // New: Comparison for Phase3 (object-of-arrays) load benchmark.
     static void compareLoadBenchmarksPhase3(const std::string &filename, int runTimes) {
         std::cout << "\nPhase3 (Parallel Arrays) Load Benchmark:\n";
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             CollisionDatasetParallelArrays dataset;
@@ -324,18 +342,21 @@ public:
                                                     const std::string &startDate,
                                                     const std::string &endDate,
                                                     int runTimes) {
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nPhase3 Date Range Search Benchmark with " << threads << " threads:\n";
             double totalTime = 0.0;
+            int resultCount = 0;
             for (int i = 0; i < runTimes; i++) {
                 auto start = std::chrono::high_resolution_clock::now();
                 auto results = dataset.searchByDateRange(startDate, endDate);
+                if(i==0) resultCount = results.size();
                 auto end = std::chrono::high_resolution_clock::now();
                 totalTime += std::chrono::duration<double>(end - start).count();
             }
-            std::cout << "Avg time: " << totalTime / runTimes << " seconds.\n";
+            std::cout << "Avg time: " << totalTime / runTimes 
+                      << " seconds. Results found: " << resultCount << ".\n";
         }
     }
 
@@ -345,37 +366,43 @@ public:
     static void compareSearchByBoroughBenchmarksPhase3(const CollisionDatasetParallelArrays &dataset,
                                                        const std::string &borough,
                                                        int runTimes) {
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nPhase3 Borough Search Benchmark with " << threads << " threads:\n";
             double totalTime = 0.0;
+            int resultCount = 0;
             for (int i = 0; i < runTimes; i++) {
                 auto start = std::chrono::high_resolution_clock::now();
                 auto results = dataset.searchByBorough(borough);
+                if(i==0) resultCount = results.size();
                 auto end = std::chrono::high_resolution_clock::now();
                 totalTime += std::chrono::duration<double>(end - start).count();
             }
-            std::cout << "Avg time: " << totalTime / runTimes << " seconds.\n";
+            std::cout << "Avg time: " << totalTime / runTimes 
+                      << " seconds. Results found: " << resultCount << ".\n";
         }
     }
 
     // New: Comparison for Phase3 search by Zip Code.
     static void compareSearchByZipCodeBenchmarksPhase3(const CollisionDatasetParallelArrays &dataset,
-                                                       const std::string &zipCode,
+                                                       const int &zipCode,
                                                        int runTimes) {
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nPhase3 Zip Code Search Benchmark with " << threads << " threads:\n";
             double totalTime = 0.0;
+            int resultCount = 0;
             for (int i = 0; i < runTimes; i++) {
                 auto start = std::chrono::high_resolution_clock::now();
                 auto results = dataset.searchByZipCode(zipCode);
+                if(i==0) resultCount = results.size();
                 auto end = std::chrono::high_resolution_clock::now();
                 totalTime += std::chrono::duration<double>(end - start).count();
             }
-            std::cout << "Avg time: " << totalTime / runTimes << " seconds.\n";
+            std::cout << "Avg time: " << totalTime / runTimes 
+                      << " seconds. Results found: " << resultCount << ".\n";
         }
     }
 
@@ -383,18 +410,21 @@ public:
     static void compareSearchByInjuryThresholdBenchmarksPhase3(const CollisionDatasetParallelArrays &dataset,
                                                                int minInjuries,
                                                                int runTimes) {
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nPhase3 Injury Threshold Search Benchmark with " << threads << " threads:\n";
             double totalTime = 0.0;
+            int resultCount = 0;
             for (int i = 0; i < runTimes; i++) {
                 auto start = std::chrono::high_resolution_clock::now();
                 auto results = dataset.searchByInjuryThreshold(minInjuries);
+                if(i==0) resultCount = results.size();
                 auto end = std::chrono::high_resolution_clock::now();
                 totalTime += std::chrono::duration<double>(end - start).count();
             }
-            std::cout << "Avg time: " << totalTime / runTimes << " seconds.\n";
+            std::cout << "Avg time: " << totalTime / runTimes 
+                      << " seconds. Results found: " << resultCount << ".\n";
         }
     }
 
@@ -403,18 +433,21 @@ public:
                                                               double minLat, double maxLat,
                                                               double minLong, double maxLong,
                                                               int runTimes) {
-        int threadCounts[] = {2, 4, 8};
+        int threadCounts[] = {2, 4, 8, 16};
         for (int threads : threadCounts) {
             omp_set_num_threads(threads);
             std::cout << "\nPhase3 Location Bounds Search Benchmark with " << threads << " threads:\n";
             double totalTime = 0.0;
+            int resultCount = 0;
             for (int i = 0; i < runTimes; i++) {
                 auto start = std::chrono::high_resolution_clock::now();
                 auto results = dataset.searchByLocationBounds(minLat, maxLat, minLong, maxLong);
+                if(i==0) resultCount = results.size();
                 auto end = std::chrono::high_resolution_clock::now();
                 totalTime += std::chrono::duration<double>(end - start).count();
             }
-            std::cout << "Avg time: " << totalTime / runTimes << " seconds.\n";
+            std::cout << "Avg time: " << totalTime / runTimes 
+                      << " seconds. Results found: " << resultCount << ".\n";
         }
     }
 

@@ -1,12 +1,12 @@
 #include "CollisionDatasetParallelArrays.hpp"
 #include "CSVParser.hpp"
+#include "CollisionRecord.hpp"
 #include <fstream>
 #include <iostream>
 #include <omp.h>
 
 bool CollisionDatasetParallelArrays::loadFromCSV(const std::string &filename) {
     CSVParser parser(filename);
-    // Instead of calling parse(), call the new function to parse directly into object-of-arrays
     if (!parser.parseParallelArrays(*this)) {
         std::cerr << "Failed to parse file into parallel arrays.\n";
         return false;
@@ -57,6 +57,10 @@ std::vector<CollisionRecord> CollisionDatasetParallelArrays::getRecords() const 
 
 std::vector<CollisionRecord> CollisionDatasetParallelArrays::searchByDateRange(const std::string &startDate,
                                                                                const std::string &endDate) const {
+    
+    std::time_t startTimestamp = CollisionRecord::convertToTimestamp(startDate);
+    std::time_t endTimestamp = CollisionRecord::convertToTimestamp(endDate);
+    
     std::vector<CollisionRecord> result;
     size_t n = crashDates.size();
     #pragma omp parallel
@@ -64,7 +68,7 @@ std::vector<CollisionRecord> CollisionDatasetParallelArrays::searchByDateRange(c
         std::vector<CollisionRecord> local;
         #pragma omp for nowait schedule(dynamic)
         for (size_t i = 0; i < n; i++) {
-            if (crashDates[i] >= startDate && crashDates[i] <= endDate) {
+            if (crashDates[i] >= startTimestamp && crashDates[i] <= endTimestamp) {
                 CollisionRecord r;
                 r.crashDate = crashDates[i];
                 r.crashTime = crashTimes[i];
@@ -152,7 +156,7 @@ std::vector<CollisionRecord> CollisionDatasetParallelArrays::searchByBorough(con
     return result;
 }
 
-std::vector<CollisionRecord> CollisionDatasetParallelArrays::searchByZipCode(const std::string &zipCode) const {
+std::vector<CollisionRecord> CollisionDatasetParallelArrays::searchByZipCode(const int &zipCode) const {
     std::vector<CollisionRecord> result;
     size_t n = zipCodes.size();
     #pragma omp parallel

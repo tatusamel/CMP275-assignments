@@ -11,7 +11,7 @@ public:
 
     std::vector<CollisionRecord> searchByDateRange(const std::string &startDate, const std::string &endDate) const;
     std::vector<CollisionRecord> searchByBorough(const std::string &borough) const;
-    std::vector<CollisionRecord> searchByZipCode(const std::string &zipCode) const;
+    std::vector<CollisionRecord> searchByZipCode(const int &zipCode) const;
     std::vector<CollisionRecord> searchByInjuryThreshold(int minInjuries) const;
     std::vector<CollisionRecord> searchByLocationBounds(double minLat, double maxLat,
                                                         double minLong, double maxLong) const;

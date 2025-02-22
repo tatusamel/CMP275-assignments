@@ -3,7 +3,9 @@
 #include <iostream>
 #include <vector>
 #include <omp.h> // Added for OpenMP
+#include <algorithm> 
 #include <sstream>
+#include "CollisionRecord.hpp"
 
 // Existing parse() function...
 bool CSVParser::parse() {
@@ -24,10 +26,10 @@ bool CSVParser::parse() {
         }
         CollisionRecord record;
         try {
-            record.crashDate = tokens[0];
+            record.crashDate = tokens[0].empty() ? 0 : CollisionRecord::convertToTimestamp(tokens[0]);
             record.crashTime = tokens[1];
             record.borough = tokens[2];
-            record.zipCode = tokens[3];
+            record.zipCode = trim(tokens[3]).empty() ? 0 : std::stoi(tokens[3]);
             record.latitude = tokens[4].empty() ? 0.0 : std::stod(tokens[4]);
             record.longitude = tokens[5].empty() ? 0.0 : std::stod(tokens[5]);
             record.location = tokens[6];
@@ -96,10 +98,10 @@ bool CSVParser::parseParallel() {
             }
             CollisionRecord record;
             try {
-                record.crashDate = tokens[0];
+                record.crashDate = tokens[0].empty() ? 0 : CollisionRecord::convertToTimestamp(tokens[0]);
                 record.crashTime = tokens[1];
                 record.borough = tokens[2];
-                record.zipCode = tokens[3];
+                record.zipCode = trim(tokens[3]).empty() ? 0 : std::stoi(tokens[3]);
                 record.latitude = tokens[4].empty() ? 0.0 : std::stod(tokens[4]);
                 record.longitude = tokens[5].empty() ? 0.0 : std::stod(tokens[5]);
                 record.location = tokens[6];
@@ -138,8 +140,7 @@ bool CSVParser::parseParallel() {
         }
     }
     
-    // Merge parallel results into the main records vector.
-    // Optionally clear current records before merging.
+   
     records.insert(records.end(), records_parallel.begin(), records_parallel.end());
     return true;
 }
@@ -230,10 +231,10 @@ bool CSVParser::parseParallelArrays(CollisionDatasetParallelArrays &dataset) {
     for (size_t i = 0; i < n; i++) {
         auto tokens = splitCSV(lines[i]);
         if (tokens.size() < 29) continue;
-        dataset.crashDates[i] = tokens[0];
+        dataset.crashDates[i] = tokens[0].empty() ? 0 : CollisionRecord::convertToTimestamp(tokens[0]);
         dataset.crashTimes[i] = tokens[1];
         dataset.boroughs[i] = tokens[2];
-        dataset.zipCodes[i] = tokens[3];
+        dataset.zipCodes[i] = trim(tokens[3]).empty() ? 0 : std::stoi(tokens[3]);
         dataset.latitudes[i] = tokens[4].empty() ? 0.0 : std::stod(tokens[4]);
         dataset.longitudes[i] = tokens[5].empty() ? 0.0 : std::stod(tokens[5]);
         dataset.locations[i] = tokens[6];
@@ -262,4 +263,22 @@ bool CSVParser::parseParallelArrays(CollisionDatasetParallelArrays &dataset) {
     }
     
     return true;
+}
+
+std::string CSVParser::ltrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }));
+    return s;
+}
+std::string CSVParser::rtrim(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }).base());
+    return s;
+}
+std::string CSVParser::trim(std::string &s) {
+    ltrim(s);
+    rtrim(s);
+    return s;
 }

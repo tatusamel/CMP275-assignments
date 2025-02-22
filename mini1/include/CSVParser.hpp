@@ -24,6 +24,9 @@ private:
     std::vector<CollisionRecord> records;
 
     std::vector<std::string> splitCSV(const std::string &line);
+    static inline std::string ltrim(std::string &s);
+    static inline std::string rtrim(std::string &s);
+    static inline std::string trim(std::string &s);
 };
 
 #endif // CSV_PARSER_HPP

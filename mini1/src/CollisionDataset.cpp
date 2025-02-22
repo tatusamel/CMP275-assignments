@@ -1,4 +1,5 @@
 #include "CollisionDataset.hpp"
+#include "CollisionRecord.hpp"
 
 bool CollisionDataset::loadFromCSV(const std::string &filename) {
     CSVParser parser(filename);
@@ -12,9 +13,14 @@ bool CollisionDataset::loadFromCSV(const std::string &filename) {
 
 std::vector<CollisionRecord> CollisionDataset::searchByDateRange(const std::string &startDate,
                                                                const std::string &endDate) const {
+
+    std::time_t startTimestamp = CollisionRecord::convertToTimestamp(startDate);
+    std::time_t endTimestamp = CollisionRecord::convertToTimestamp(endDate);
+
     std::vector<CollisionRecord> result;
+
     for (const auto &record : records) {
-        if (record.crashDate >= startDate && record.crashDate <= endDate) {
+        if (record.crashDate >= startTimestamp && record.crashDate <= endTimestamp) {
             result.push_back(record);
         }
     }
@@ -24,7 +30,6 @@ std::vector<CollisionRecord> CollisionDataset::searchByDateRange(const std::stri
 std::vector<CollisionRecord> CollisionDataset::searchByBorough(const std::string &borough) const {
     std::vector<CollisionRecord> result;
     for (const auto &record : records) {
-        // Convert both strings to lower case if needed for case-insensitive comparison
         if (record.borough == borough) {
             result.push_back(record);
         }
@@ -32,7 +37,7 @@ std::vector<CollisionRecord> CollisionDataset::searchByBorough(const std::string
     return result;
 }
 
-std::vector<CollisionRecord> CollisionDataset::searchByZipCode(const std::string &zipCode) const {
+std::vector<CollisionRecord> CollisionDataset::searchByZipCode(const int &zipCode) const {
     std::vector<CollisionRecord> result;
     for (const auto &record : records) {
         if (record.zipCode == zipCode) {
@@ -45,7 +50,6 @@ std::vector<CollisionRecord> CollisionDataset::searchByZipCode(const std::string
 std::vector<CollisionRecord> CollisionDataset::searchByInjuryThreshold(int minInjuries) const {
     std::vector<CollisionRecord> result;
     for (const auto &record : records) {
-        // Sum up different injury counts; you could customize this
         int totalInjuries = record.personsInjured + record.pedestriansInjured +
                             record.cyclistsInjured + record.motoristsInjured;
         if (totalInjuries >= minInjuries) {

@@ -2,13 +2,15 @@
 #define COLLISION_RECORD_HPP
 
 #include <string>
+#include <chrono>
+#include <sstream>
 
 class CollisionRecord {
 public:
-    std::string crashDate;
+    std::time_t crashDate;
     std::string crashTime;
     std::string borough;
-    std::string zipCode;
+    int zipCode;
     double latitude;
     double longitude;
     std::string location;
@@ -39,6 +41,12 @@ public:
     std::string vehicleTypeCode4;
     std::string vehicleTypeCode5;
 
+    static std::time_t convertToTimestamp(const std::string& dateStr) {
+        std::tm tm = {};
+        std::istringstream ss(dateStr);
+        strptime(dateStr.c_str(), "%m/%d/%Y", &tm);
+        return std::mktime(&tm);
+    }
     
 };
 
